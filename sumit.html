@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Advanced Mathematics Solver</title>
+<meta name="description" content="Solve equations, integrals, derivatives, and more with the Advanced Mathematics Solver. Try math problems instantly.">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.7.0/math.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        textarea, #output {
+            min-height: 100px;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .examples {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Advanced Mathematics Solver</h1>
+    <div class="container">
+        <textarea id="problemInput" placeholder="Enter your math problem here (e.g., 2+2, 3x^2+2x+1=0, derivative of x^2, integral of sin(x))"></textarea>
+        <button onclick="solveMathProblem()">Solve</button>
+        <div id="output" style="border: 1px solid #ccc; background-color: #f9f9f9;"></div>
+    </div>
+
+    <div class="examples">
+        <h3>Examples to try:</h3>
+        <ul>
+            <li>Basic arithmetic: <code>2 + 3 * (4 - 1)</code></li>
+            <li>Equations: <code>x^2 + 2x - 8 = 0</code></li>
+            <li>Derivatives: <code>derivative of x^2 + 3x</code></li>
+            <li>Integrals: <code>integral of sin(x)</code></li>
+            <li>Matrix: <code>multiply([1,2;3,4], [5,6;7,8])</code></li>
+        </ul>
+    </div>
+
+    <script>
+        function solveMathProblem() {
+            const problem = document.getElementById('problemInput').value.trim();
+            let solution = "";
+            
+            try {
+                if (problem.includes('=')) {
+                    // Equation solving
+                    if (problem.includes('x^2') || problem.includes('x²')) {
+                        solution = solveQuadratic(problem);
+                    } else {
+                        solution = "Equation solution: " + math.solve(problem);
+                    }
+                } 
+                else if (problem.startsWith('derivative of')) {
+                    const expr = problem.replace('derivative of', '').trim();
+                    solution = "Derivative: " + math.derivative(expr, 'x').toString();
+                }
+                else if (problem.startsWith('integral of')) {
+                    const expr = problem.replace('integral of', '').trim();
+                    solution = "Integral: " + math.integral(expr, 'x').toString();
+                }
+                else {
+                    // Basic evaluation
+                    solution = "Result: " + math.evaluate(problem);
+                }
+            } catch (e) {
+                solution = "Error: " + e.message;
+            }
+            
+            document.getElementById('output').innerHTML = solution;
+        }
+
+        function solveQuadratic(equation) {
+            equation = equation.replace(/\s+/g, '');
+            equation = equation.replace(/x²/g, 'x^2');
+            
+            try {
+                const parts = equation.split('=');
+                const expr = parts[0] + '-(' + (parts[1] || '0') + ')';
+                const solutions = math.polynomialRoot(...math.parse(expr).toArray());
+                
+                let result = "Solutions: ";
+                solutions.forEach((sol, i) => {
+                    result += `x${i+1} = ${math.format(sol, {precision: 4})}, `;
+                });
+                
+                return result.slice(0, -2); // Remove trailing comma
+            } catch (e) {
+                return "Could not solve the equation: " + e.message;
+            }
+        }
+    </script>
+</body>
+</html>
+
